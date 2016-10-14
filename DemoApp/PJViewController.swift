@@ -5,6 +5,7 @@
 //  Created by Peter Jablonski on 10/13/16.
 //  Copyright © 2016 Peter Jablonski. All rights reserved.
 //
+import MessageUI
 
 import UIKit
 
@@ -17,6 +18,7 @@ class PJViewController: UIViewController {
         
         self.view.addSubview(self.listTableView)
         self.view.addSubview(self.photoButton)
+        self.view.addSubview(self.sendInfoButton)
         self.view.backgroundColor = UIColor.whiteColor()
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -32,6 +34,7 @@ class PJViewController: UIViewController {
         
         self.listTableView.frame = CGRect(x: 0.0, y: 0.0, width: 375.0, height: 150.0)
         self.photoButton.frame = CGRect(x: 0.0, y: 150.0, width: 375.0, height: 50.0)
+        self.sendInfoButton.frame = CGRect(x: 0.0, y: 300, width: 375.0, height: 50.0)
         
     }
 
@@ -47,8 +50,7 @@ class PJViewController: UIViewController {
     
     lazy var photoButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Take Photo", forState: .Normal)
-        button.setTitle("Take Pic", forState: .Highlighted)
+        button.setTitle("Select Photo", forState: .Normal)
         button.setTitleColor(UIColor.blueColor(), forState: .Normal)
         button.addTarget(self, action: #selector(takePhoto), forControlEvents: .TouchUpInside)
         return button
@@ -60,7 +62,30 @@ class PJViewController: UIViewController {
         photoViewController.delegate = self
         self.navigationController?.presentViewController(photoViewController, animated: true, completion: nil)
     }
-
+    
+    lazy var sendInfoButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Send", forState: .Normal)
+        button.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        button.addTarget(self, action: #selector(sendInfo), forControlEvents: .TouchUpInside)
+        return button
+    }()
+    
+    func sendInfo(){
+        let mailComposerVC = MFMailComposeViewController()
+        mailComposerVC.mailComposeDelegate = self // Extremely important to set the --mailComposeDelegate-- property, NOT the --delegate-- property
+        
+        mailComposerVC.setToRecipients(["someone@somewhere.com"])
+        mailComposerVC.setSubject("Sending you an in-app e-mail...")
+        mailComposerVC.setMessageBody("Sending e-mail in-app is not so bad!", isHTML: false)
+        
+        
+        if MFMailComposeViewController.canSendMail() {
+            self.navigationController?.presentViewController(mailComposerVC, animated: true, completion: nil)
+        } else {
+            print("errror")
+        }
+    }
 }
 
 extension PJViewController: UITableViewDataSource {
@@ -86,6 +111,7 @@ extension PJViewController: UITableViewDelegate {
         let viewController = UIViewController()
         viewController.view.backgroundColor = UIColor.whiteColor()
         self.navigationController?.pushViewController(viewController, animated: true)
+        print("You selected cell #\(self.categories[indexPath.row])!")
     }
 }
 
@@ -97,7 +123,7 @@ extension PJViewController: UIImagePickerControllerDelegate {
             imageView.image = image
             imageView.contentMode = .ScaleAspectFill
             self.view.addSubview(imageView)
-            imageView.frame = self.view.bounds
+            imageView.frame = CGRect(x: 125.0, y: 200.0, width: 100.0, height: 100.0)
         }
     }
     
@@ -105,3 +131,9 @@ extension PJViewController: UIImagePickerControllerDelegate {
 
 extension PJViewController: UINavigationControllerDelegate {}
 
+extension PJViewController: MFMailComposeViewControllerDelegate{
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWith: MFMailComposeResult, error: NSError){
+        self.dismissViewControllerAnimated(false, completion: nil)
+    }
+
+}
