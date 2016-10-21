@@ -14,15 +14,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        let screen: UIScreen = UIScreen.mainScreen()
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        let screen: UIScreen = UIScreen.main
         let bounds: CGRect = screen.bounds
         
         self.window = UIWindow(frame: bounds)
         
         let viewController = PJViewController()
         let navController = UINavigationController(rootViewController: viewController)
-        navController.navigationBar.translucent = false
+        navController.navigationBar.isTranslucent = false
         self.window!.rootViewController = navController
         
         self.window!.makeKeyAndVisible()
